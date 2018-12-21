@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Market Maker</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+    .jumbotron
+    {
+      padding-top: 1px;
+      padding-bottom: 1px;
+      background-color:#337ab7;
+      color:white;
+    }
+    .jumbotron p
+    {
+      margin-bottom: 0px;
+      font-size: 35px;
+      font-weight: 200;
+    }
+    .container
+    {
+      width: 1800px;
+    }
+
+    /* Active strategy table */
+    table.active_strategies
+    {
+      border-collapse: collapse;
+      width: 1768px;
+      overflow-x: scroll;
+      display: block;
+      border-radius:4px;
+
+    }
+    table.active_strategies thead, table.active_strategies tbody
+    {
+      display: block;
+    }
+    table.active_strategies thead
+    {
+      background-color:#337ab7;
+      color:white;
+      width:1768px;
+    }
+    table.active_strategies tbody
+    {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: 220px;
+      width:1768px;
+    }
+    table.active_strategies td, table.active_strategies th
+    {
+      min-width: 134px;
+      height: 25px;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 147px;
+      border:1px solid #337ab7;
+    }
+
+
+    /* Open Orders */
+    table.open_orders
+    {
+      border-collapse: collapse;
+      width: 1768px;
+      overflow-x: scroll;
+      display: block;
+      border-radius:4px;
+
+    }
+    table.open_orders thead, table.open_orders tbody
+    {
+      display: block;
+    }
+    table.open_orders thead
+    {
+      background-color:#337ab7;
+      color:white;
+      width:1768px;
+    }
+    table.open_orders tbody
+    {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: 220px;
+      width:1768px;
+    }
+    table.open_orders td, table.open_orders th
+    {
+      min-width: 225px;
+      height: 25px;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 147px;
+      border:1px solid #337ab7;
+    }
+
+
+
+    .table>thead:first-child>tr:first-child>th
+    {
+      border-top: 0;
+      border-bottom: none;
+    }
+    .table-bordered>thead>tr>th,.table-bordered>tbody>tr>td
+    {
+      border: 1px solid #337ab7;
+      text-align:center;
+    }
+
+    /* The container */
+  .container {
+      position: relative;
+      margin-bottom: 12px;
+      cursor: pointer;
+      user-select: none;
+  }
+
+  /* Hide the browser's default checkbox */
+  .container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+  }
+
+  /* Create a custom checkbox */
+  .checkmark {
+      position: absolute;
+      top: 0;
+      left: 55px;
+      height: 20px;
+      width: 20px;
+      background-color: #eee;
+      border:1px solid #337ab7;
+  }
+
+  /* On mouse-over, add a grey background color */
+  .container:hover input ~ .checkmark {
+      background-color: none;
+  }
+
+  /* When the checkbox is checked, add a blue background */
+  .container input:checked ~ .checkmark {
+      background-color: none;
+  }
+
+  /* Create the checkmark/indicator (hidden when not checked) */
+  .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+  }
+
+  /* Show the checkmark when checked */
+  .container input:checked ~ .checkmark:after {
+      display: block;
+  }
+
+  /* Style the checkmark/indicator */
+  .container .checkmark:after {
+      left: 6px;
+      width: 7px;
+      height: 16px;
+      border: solid black;
+      border-width: 0 3px 3px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+  }
+
+  legend
+  {
+      display: block;
+      width: 30%;
+      padding: 0;
+      margin-bottom: 4px;
+      font-size: 22px;
+      line-height: inherit;
+      color: #337ab7;
+      border: 0;
+      /* border-bottom: 1px solid #e5e5e5; */
+      margin-left: -60px;
+      font-weight:700;
+      text-align:-webkit-center;
+  }
+
+  #active_refresh:hover,#stop_strategy:hover,#suspend_strategy:hover,#open_order_refresh:hover,#cancel_selected_order:hover,#activate_strategy:hover
+  {
+    background-color:#337ab7 !important;
+    color:white !important;
+  }
+
+
+  table.fill_details
+  {
+    border-collapse: collapse;
+    width: 100%;
+    display: block;
+    border:1px solid #337ab7;
+    background-color:white;
+    border-top-left-radius:4px;
+    border-top-right-radius:4px;
+  }
+  table.fill_details thead
+  {
+    background-color: #337ab7;
+    color:white;
+  }
+  table.fill_details thead, table.fill_details tbody
+  {
+     display: block;
+  }
+  table.fill_details tbody
+  {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 185px;
+  }
+  table.fill_details td, table.fill_details th
+  {
+    height: 25px;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    max-width: 257px;
+    border:1px solid #337ab7;
+    border-left:none;
+    text-align:center;
+  }
+
+  .highlight
+  {
+    background-color:lightgray;
+    color:black;
+  }
+  .unhighlight
+  {
+    background-color:none;
+  }
+  </style>
+</head>
+<body>
+<div class="jumbotron text-center">
+  <p><b>Market Maker Dashboard</b></p>
+  </div>
+<div class="container">
+  <div class="col-md-12" style="margin-top:-33px">
+    <div class="form-group">
+      <span style="white-space: nowrap">
+          <div class="col-md-6">
+          </div>
+          <div class="col-md-3" style="margin-top:7px">
+          </div>
+          <div class="col-md-3" style="margin-top:14px">
+            <label class="container" style="margin-right:-112px;top:-3px"><input type="checkbox" style="margin-left:48px" class="select_order"><span style="margin-left:-84px;border:1px solid darkred" class="checkmark"></span></label><span style="margin-top:68px;margin-left:-298px;color:darkred"><b>Suspend All Trading</b></span>
+            <p style="margin-top:-20px;color:darkblue;margin-left:151px"><b>Server Time : {{datetime}}</b></p>
+          </div>
+      </span>
+    </div><br><br>
+  </div>
+  <div class="col-md-12" style="margin-bottom:-35px;margin-top:25px">
+    <div class="col-md-6">
+        <legend style="cursor:text">Active strategies :</legend>
+    </div>
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-5" style="cursor:pointer">
+      <button class="btn btn-default" onclick="active_refresh()" style="border:2px solid #337ab7;width:20%;margin-left:135px;;color:#337ab7;margin-top:-5px"  id="active_refresh"><b>Refresh</b></button>
+      <button class="btn btn-default" onclick="stop_strategy()" style="border:2px solid #337ab7;width:20%;margin-left:7px;;color:#337ab7;margin-top:-6px"  id="stop_strategy"><b>Stop Strategy</b></button>
+      <button class="btn btn-default" onclick="suspend_strategy()" style="border:2px solid #337ab7;width:20%;color:#337ab7;margin-left:434px;margin-top:-60px" id="suspend_strategy"><b>Suspend Strategy</b></button>
+      <button class="btn btn-default" onclick="activate_strategy()" style="border:2px solid #337ab7;width:20%;color:#337ab7;margin-left:582px;margin-top:-101px" id="activate_strategy"><b>Activate Strategy</b></button>
+    </div>
+  </div>
+  <table class="table table-bordered active_strategies" id="table1" style="text-align:center;border:1px solid #337ab7">
+    <thead>
+      <tr>
+        <th style="border-left:none"><label class="container"><input type="checkbox" onclick="active_select_all()" class="active_select_all"><span class="checkmark"></span></label></th>
+        <th>Strategy ID</th>
+        <th>Strategy Name</th>
+        <th>Model</th>
+        <th>Symbol</th>
+        <th>Market</th>
+        <th>Status</th>
+        <th>Buy Qty</th>
+        <th>Sell Qty</th>
+        <th>Open Position</th>
+        <th>Last Traded Price</th>
+        <th>Buy Avg Px</th>
+        <th>Sell Avg Px</th>
+        <th>Rebate</th>
+        <th>Fees</th>
+        <th>Realized PnL</th>
+        <th>Unrealized PnL</th>
+      </tr>
+    </thead>
+    <tbody class="active_body">
+      {% for active in active_strategies %}
+      <tr id="{{active['Strategy_id']}}_{{loop.index}}">
+        <td style="border-left:none"><label class="container"><input type="checkbox" class="active_all" onclick="active_row('{{loop.index}}','{{active['Strategy_id']}}_{{loop.index}}')"><span class="checkmark"></span></label></td>
+        <td>{{active['Strategy_id']}}</td>
+        <td>{{active['Strategy_Name']}}</td>
+        <td>{{active['Model']}}</td>
+        <td>{{active['Symbol']}}</td>
+        <td>{{active['Market']}}</td>
+        <td>{{active['Status']}}</td>
+        <td>{{active['Buy_Qty']}}</td>
+        <td>{{active['Sell_Qty']}}</td>
+        <td>{{active['Open_position']}}</td>
+        <td>{{active['last_traded_price']}}</td>
+        <td>{{active['buy_avg_px']}}</td>
+        <td>{{active['sell_avg_px']}}</td>
+        <td>{{active['rebate']}}</td>
+        <td>{{active['fees']}}</td>
+        <td>{{active['Realized_pnl']}}</td>
+        <td>{{active['Unrealized_pnl']}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="col-md-12" style="margin-bottom:-17px;margin-top:10px">
+    <div class="col-md-6">
+        <legend style="cursor:text;margin-left:-82px">Open Orders :</legend>
+    </div>
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-4" style="cursor:pointer">
+      <button class="btn btn-default" onclick="open_order_refresh()" style="border:2px solid #337ab7;width:26%;margin-left:234px;;color:#337ab7;"  id="open_order_refresh"><b>Refresh</b></button>
+      <button class="btn btn-default" onclick="cancel_selected_order()" style="border:2px solid #337ab7;width:35%;color:#337ab7;margin-left:386px;margin-top:-59px" id="cancel_selected_order"><b>Cancel Selected Order(s)</b></button>
+    </div>
+  </div>
+  <table class="table table-bordered open_orders" id="table2" style="text-align:center;border:1px solid #337ab7">
+    <thead>
+      <tr>
+        <th style="border-left:none"><label class="container"><input type="checkbox" onclick="open_order_select_all()" class="open_order_select_all"><span class="checkmark" style="left:90px"></span></label></th>
+        <th>Order Timestamp</th>
+        <th>Strategy ID</th>
+        <th>Order ID</th>
+        <th>Symbol</th>
+        <th>Order Status</th>
+        <th>Side</th>
+        <th>Order Qty</th>
+        <th>Limit px</th>
+        <th>Executed Qty</th>
+        <th>Leaves Qty</th>
+        <th>Avg Px</th>
+        <th>Last Execution Timestamp</th>
+      </tr>
+    </thead>
+    <tbody class="open_order_body">
+    {% for open_order in open_orders %}
+      <tr onclick="open_order_row_highlight('open_order_{{loop.index}}','{{open_order['Strategy_id']}}_{{loop.index}}')" id="open_order_{{loop.index}}">
+        <td style="border-left:none"><label class="container"><input type="checkbox" class="open_all" id="open_{{open_order['Strategy_id']}}_{{loop.index}}"><span class="checkmark" style="left:90px"></span></label></td>
+        <td>{{open_order['Order_timestamp']}}</td>
+        <td>{{open_order['Strategy_id']}}</td>
+        <td>{{open_order['Order_id']}}</td>
+        <td>{{open_order['Symbol']}}</td>
+        <td>{{open_order['Order_status']}}</td>
+        <td>{{open_order['Side']}}</td>
+        <td>{{open_order['Order_qty']}}</td>
+        <td>{{open_order['Limit_px']}}</td>
+        <td>{{open_order['Executed_qty']}}</td>
+        <td>{{open_order['Leaves_qty']}}</td>
+        <td>{{open_order['avg_px']}}</td>
+        <td>{{open_order['Last_execution_timestamp']}}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="col-md-12" style="margin-bottom:-17px;margin-top:10px">
+    <legend style="cursor:text;margin-left:-213px">Fill Details :</legend>
+  </div>
+  <table class="table fill_details" id="table3" style="text-align:center;margin-top:65px;border:1px solid #337ab7">
+    <thead>
+      <tr>
+        <th class="col-md-1" style="border-left:none"><label class="container"><input type="checkbox" onclick="fill_select_all()" class="fill_select_all"><span class="checkmark" style="left:110px"></span></label></th>
+        <th class="col-md-2">Execution Timestamp</th>
+        <th class="col-md-1" style="text-align:left">Strategy ID</th>
+        <th class="col-md-1">Order ID</th>
+        <th class="col-md-1" style="text-align:right">Symbol</th>
+        <th class="col-md-1" style="text-align:right">Side</th>
+        <th class="col-md-1" style="text-align:right">Fill Qty</th>
+        <th class="col-md-1">Avg px</th>
+        <th class="col-md-1">Fees</th>
+        <th class="col-md-1">Fee Unit</th>
+        <th class="col-md-1">Fee Unit USD</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fill_detail in fill_details %}
+        <tr>
+          <td class="col-md-1" style="border-left:none"><label class="container"><input type="checkbox" class="fill_all"><span class="checkmark" style="left:110px"></span></label></td>
+          <td class="col-md-2">{{fill_detail['Execution_timestamp']}}</td>
+          <td class="col-md-1">{{fill_detail['Strategy_id']}}</td>
+          <td class="col-md-1">{{fill_detail['Order_id']}}</td>
+          <td class="col-md-1">{{fill_detail['Symbol']}}</td>
+          <td class="col-md-1">{{fill_detail['Side']}}</td>
+          <td class="col-md-1">{{fill_detail['Fill_qty']}}</td>
+          <td class="col-md-1">{{fill_detail['avg_px']}}</td>
+          <td class="col-md-1">{{fill_detail['Fees']}}</td>
+          <td class="col-md-1">{{fill_detail['Fee_unit']}}</td>
+          <td class="col-md-1">{{fill_detail['Fee_unit_usd']}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</body>
+<script>
+  $(document).ready(function()
+  {
+    $('.active_strategies').on('scroll', function ()
+    {
+      $("#"+this.id+" > *").width($(this).width() + $(this).scrollLeft());
+    });
+
+    $('.open_orders').on('scroll', function ()
+    {
+      $("#"+this.id+" > *").width($(this).width() + $(this).scrollLeft());
+    });
+  });
+
+  function suspend_strategy()
+  {
+
+    if($('.active_all').is(':checked'))
+    {
+      alert('Good Job!');
+    }
+    else
+    {
+      alert("Select atleast one strategy to perform Suspend operation!");
+    }
+
+  }
+  function stop_strategy()
+  {
+    if($('.active_all').is(':checked'))
+    {
+      alert('Good Job!');
+    }
+    else
+    {
+      alert("Select atleast one strategy to perform Stop operation!");
+    }
+  }
+  function activate_strategy()
+  {
+    if($('.active_all').is(':checked'))
+    {
+      var tableControl= document.getElementById('table2');
+      var arrayOfValues = [];
+
+      $('input:checkbox:checked', tableControl).each(function()
+      {
+          arrayOfValues.push($('.active_all').closest('tr').find('td:last').text());
+      }).get();
+      console.log(arrayOfValues);
+
+    }
+    else
+    {
+      alert("Select atleast one strategy to Activate!");
+    }
+  }
+
+
+  function active_refresh()
+  {
+    alert("Active Refresh!!");
+  }
+  function open_order_refresh()
+  {
+    alert('Open order Refresh!!');
+  }
+  function cancel_selected_order()
+  {
+    if($('.open_all').is(':checked'))
+    {
+      alert('Good Job!');
+    }
+    else
+    {
+      alert("Select atleast one strategy to perform cancel operation!");
+    }
+  }
+
+  function active_select_all()
+  {
+    if($('.active_select_all').is(":checked"))
+    {
+      $('.active_all').prop('checked',true);
+      $('.active_body').addClass('highlight');
+    }
+    else
+    {
+      $('.active_all').prop('checked',false);
+      $('.active_body').removeClass('highlight');
+    }
+  }
+  function open_order_select_all()
+  {
+    if($('.open_order_select_all').is(':checked'))
+    {
+      $('.open_all').prop('checked',true);
+      $('.open_order_body').addClass('highlight');
+    }
+    else
+    {
+      $('.open_all').prop('checked',false);
+      $('.open_order_body').removeClass('highlight');
+    }
+  }
+
+  function fill_select_all()
+  {
+    if($('.fill_select_all').is(':checked'))
+    {
+      $('.fill_all').prop('checked',true);
+    }
+    else
+    {
+      $('.fill_all').prop('checked',false);
+    }
+  }
+
+  function active_row(id)
+  {
+    console.log('#'+id);
+
+    if($('#'+id).is(':checked'))
+    {
+      alert("Checkbox is checked.");
+    }
+    else if($(this).is(":not(:checked)"))
+    {
+       alert("Checkbox is unchecked.");
+    }
+  }
+
+  function active_row(index,id)
+  {
+    console.log(index,id);
+
+    if($('#'+id).is(':checked'))
+    {
+      console.log('checked!');
+    }
+    else
+    {
+       console.log('Unchecked!');
+    }
+  }
+
+  function open_order_checkbox()
+  {
+    if($(this).is(':checked'))
+    {
+      alert('Checked!');
+    }
+    else
+    {
+      alert('Unchecked!!');
+    }
+  }
+
+  function open_order_row_highlight(index,id)
+  {
+    console.log(id);
+    $('#'+index).toggleClass('highlight');
+    $('#open_'+id).prop('checked',true);
+  }
+
+
+
+</script>
+</html>
