@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Crypto Auto Transfer (CAT)</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+
+    <style>
+    .refresh
+    {
+        width: 10%;
+        margin-left: 42%;
+    }
+    .transfer
+    {
+        width:55%;
+    }
+    .jumbotron
+    {
+        padding-top: 15px !important;
+        padding-bottom: 1px !important;
+    }
+    textarea
+    {
+        width:100%;
+        padding-bottom:5%;
+        background-color:#eee;
+    }
+    tbody
+    {
+        display:block;
+        height:157px;
+        overflow:auto;
+    }
+    thead, tbody tr
+    {
+        display:table;
+        width:100%;
+        table-layout:fixed;
+    }
+    thead
+    {
+        width: calc( 100% - 1em )
+    }
+    p
+    {
+        font-size: 21px;
+        font-weight: 200;
+    }
+
+    legend
+    {
+        display: block;
+        padding-left: 2px;
+        padding-right: 2px;
+        border: none;
+        width:21%;
+        color:#337ab7;
+        text-align:-webkit-center;
+        margin-left:14px;
+
+    }
+
+    fieldset
+    {
+        min-width: 0;
+        padding: 0;
+        margin: 0;
+        border: 1px solid #337ab7;
+    }
+    label
+    {
+        font-size:16px;
+    }
+    textarea
+    {
+        margin-left:22px;
+        width:95%;
+        height:200px;
+    }
+    .dropdown-menu
+    {
+        background-color:#337ab7;
+    }
+    .dropdown-menu li a
+    {
+        color:white;
+    }
+    .add_modal_dialog
+    {
+        width:700px;
+        margin-top:65px;
+    }
+    .add_modal_header
+    {
+        background-color:#337ab7;
+        color:white;
+    }
+    .modal-title
+    {
+        text-align:center;
+    }
+    .add_modal_dialog
+    {
+        overflow-y: initial !important;
+    }
+    .add_modal_body
+    {
+        height: 345px;
+        overflow-y: auto;
+    }
+    .update_api_dialog
+    {
+        margin-top:65px;
+        width:415px;
+    }
+    .update_api_header
+    {
+        background-color:#337ab7;
+        color:white;
+    }
+    .close
+    {
+        opacity:1;
+        color:white;
+    }
+    </style>
+</head>
+<body style="background-color:#eee">
+    <div class="jumbotron text-center" style="margin-bottom:0;background:#337ab7;color:white">
+        <p><b>Crypto Auto Transfer (CAT)</b></p>
+    </div>
+    <div class="container" style="height:auto;padding-bottom:1%;margin-top:2px;border:2px solid #337ab7;border-radius:4px;background-color:white;width:900px">
+        <div class="row" style="background-color:#337ab7;color:white;">
+            <div class="col-sm-12">
+                <div class="col-sm-1">
+                    <p style="cursor:pointer" data-toggle="dropdown" id="file">File</p>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Refresh</a></li>
+                        <li><a href="#">Clear Logs</a></li>
+                        <li><a href="#">Exit</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-11">
+                    <p style="cursor:pointer;margin-left:-15px" data-toggle="dropdown">Transfer</p>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Manual Transfer</a></li>
+                        <li><a href="#" data-toggle="modal" data-target="#add_api">Add API Keys</a></li>
+                        <li><a href="#" data-toggle="modal" data-target="#update_api">Update API Keys</a></li>
+                        <li><a href="#">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div><br>
+        <div id="add_api" class="modal fade" role="dialog">
+          <div class="modal-dialog add_modal_dialog">
+            <div class="modal-content">
+                <form action="/getval" method="POST" id="add_api_keys">
+                  <div class="modal-header add_modal_header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title"><b>Add API Keys</b></h4>
+                  </div>
+                  <div class="modal-body add_modal_body">
+                    <div class="col-sm-12">
+                        <div class="col-sm-3">
+                            <label>Exchange</label>
+                        </div>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="Enter Exchange" id="exchange" name="exchange" required>
+                        </div><br><br>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="col-sm-3">
+                            <label>API Key</label>
+                        </div>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="Enter API key" id="api_key" name="api_key" required>
+                        </div><br><br>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="col-sm-3">
+                            <label>Secret Key</label>
+                        </div>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" placeholder="Enter Secret key" id="secret_key" name="secret_key" required>
+                        </div><br><br>
+                    </div>
+                    <div class="col-sm-12" id="buildyourform"></div>
+                      <button type="button" class="btn btn-primary center-block" id="add_input">Add more fields</button>
+                  </div>
+                  <div class="modal-footer">
+                      <div class="col-sm-12">
+                          <div class="col-sm-6">
+                              <button type="button" id="add_btn" class="btn btn-primary center-block" data-toggle="modal" style="margin-left:202px;width:30%">Add</button>
+                          </div>
+                          <div class="col-sm-4">
+                              <button type="button" id="reset_btn" class="btn btn-primary" style="margin-right:116px;width:47%">Reset</button>
+                          </div>
+                          <div class="col-sm-2">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                      </div>
+                  </div>
+                </form>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="update_api" role="dialog">
+            <div class="modal-dialog update_api_dialog">
+                <div class="modal-content">
+                    <div class="modal-header update_api_header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><b>Unseal Key Portion</b></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <center><p style="font-size:18px">Enter exact 6 digits key to add secret to vault</p>
+                        <input type="text" class="form-control" id="six_digit" style="width:92%" required><br>
+                        </center>
+                        <center>
+                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#update_api_keys" style="width:20%">Ok</button><button type="button" style="margin-left:15px" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </center>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="update_api_keys" class="modal fade" role="dialog">
+          <div class="modal-dialog add_modal_dialog">
+            <div class="modal-content">
+                <form action="/getval" method="POST">
+                  <div class="modal-header add_modal_header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title"><b>Update API Keys</b></h4>
+                  </div>
+                  <div class="modal-body add_modal_body">
+                      <div class="col-sm-12">
+                          <label style="color:#337ab7"><u>Exchange List:</u></label>
+                      </div>
+                      <div class="col-sm-12">
+                          <div class="col-sm-5">
+                              <label>Select exchange to update</label>
+                          </div>
+                          <div class="col-sm-4">
+                              <select class="form-control" id="select_exchange_list" style="margin-top:-7px">
+                                  <option value="">Select Exchange</option>
+                                  <option value="Binance">Binance</option>
+                                  <option value="Huobi">Huobi</option>
+                                  <option value="Kraken">Kraken</option>
+                                  <option value="Poloniex">Poloniex</option>
+                                  <option value="Gateio">Gateio</option>
+                              </select>
+                          </div>
+                      </div><br><br><br><br>
+                      <div class="col-sm-12">
+                          <label style="color:#337ab7"><u>API Key Details:</u></label>
+                      </div>
+                        <div class="col-sm-12">
+                            <div class="col-sm-3">
+                                <label>Exchange</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" placeholder="Enter Exchange" id="update_exchange" name="exchange" required>
+                            </div><br><br>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="col-sm-3">
+                                <label>API Key</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" placeholder="Enter API key" id="update_api_key" name="api_key" required>
+                            </div><br><br>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="col-sm-3">
+                                <label>Secret Key</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" placeholder="Enter Secret key" id="update_secret_key" name="secret_key" required>
+                            </div><br><br>
+                        </div>
+                    <div class="col-sm-12" id="updateform"></div>
+                      <button type="button" class="btn btn-primary center-block" id="add_input_fields">Add more fields</button>
+                  </div>
+                  <div class="modal-footer">
+                      <div class="col-sm-12">
+                          <div class="col-sm-6">
+                              <button type="button" id="update_btn" class="btn btn-primary center-block" data-toggle="modal" data-target="#add_api_modal" style="margin-left:202px;width:30%">Update</button>
+                          </div>
+                          <div class="col-sm-4">
+                              <button type="button" id="update_reset_btn" class="btn btn-primary" style="margin-right:116px;width:47%">Reset</button>
+                          </div>
+                          <div class="col-sm-2">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                      </div>
+                  </div>
+                </form>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="add_api_modal" role="dialog">
+            <div class="modal-dialog update_api_dialog">
+                <div class="modal-content">
+                    <div class="modal-header update_api_header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><b>Unseal Key Portion</b></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <center><p style="font-size:18px">Enter exact 6 digits key to add secret to vault</p>
+                        <input type="text" class="form-control" id="add_six_digit" style="width:92%" required><br>
+                        </center>
+                        <center>
+                            <button type="button" id="add_sub" class="btn btn-default" style="width:20%">Ok</button><button type="button" style="margin-left:15px" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </center>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="update_api_modal" role="dialog">
+            <div class="modal-dialog update_api_dialog">
+                <div class="modal-content">
+                    <div class="modal-header update_api_header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><b>Unseal Key Portion</b></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <center><p style="font-size:18px">Enter exact 6 digits key to add secret to vault</p>
+                        <input type="text" class="form-control" id="six_digit_update" style="width:92%" required><br>
+                        </center>
+                        <center>
+                            <button type="button" id="update_secret" class="btn btn-default" style="width:20%">Ok</button><button type="button" style="margin-left:15px" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </center>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form id="open_request_form">
+            <div class="row">
+              <div class="col-sm-12">
+                  <fieldset>
+                      <legend><b>Open Requests</b></legend>
+                      <div class="col-sm-12">
+                          <div class="col-sm-5">
+                              <label style="margin-left:68px">Select Request to Process</label>
+                          </div>
+                          <div class="col-sm-4" style="margin-top:-9px">
+                              <select class="form-control" id="select_process" name="select_process" required>
+                                  <option value="">Select request to process</option>
+                                  {% for open in open_request%}
+                                  <option value="{{open}}">{{open}}</option>
+                                  {% endfor %}
+                              </select>
+                          </div>
+                          <div class="col-sm-3" style="margin-top:-9px">
+                              <button type="button" class="btn btn-primary" id="refresh">Refresh</button>
+                          </div>
+                          <br><br>
+                      </div>
+                  </fieldset>
+              </div><br><br>
+            </div><br>
+            <div class="row">
+                <div class="col-sm-12">
+                    <fieldset>
+                        <legend><b>Transfer Details</b></legend>
+                        <div class="col-sm-12">
+                            <div class="col-sm-12">
+                                <div class="col-sm-2" style="text-align:right">
+                                    <label>Crypto</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" id="crypto" style="margin-top:-9px" name="crypto" disabled>
+                                </div>
+                                <div class="col-sm-2" style="text-align:right">
+                                    <label>Units</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" id="units" style="margin-top:-9px" name="units" disabled>
+                                </div>
+                                <br><br>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="col-sm-12">
+                                <div class="col-sm-2" style="text-align:right">
+                                    <label>Source</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" id="source" name="source" style="margin-top:-9px" disabled>
+                                </div>
+                                <div class="col-sm-2" style="text-align:right">
+                                    <label>Destination</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" id="destination" name="destination" style="margin-top:-9px" disabled>
+                                </div>
+                                <br><br>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div><br><br>
+            </div><br>
+            <div class="row">
+                <div class="col-sm-12">
+                    <fieldset>
+                        <legend><b>Transfer Status</b></legend>
+                        <textarea name="transfer_status"></textarea><br><br>
+                    </fieldset>
+                </div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-primary" style="margin-left:70%;width:30%" data-toggle="modal" id="submit">Submit</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-primary" style="width:30%" id="close">Close</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="confirm_transfer" role="dialog">
+                <div class="modal-dialog update_api_dialog">
+                    <div class="modal-content">
+                        <div class="modal-header update_api_header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title"><b>Confirm Transfer</b></h4>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <center><p style="font-size:18px">Transferring <span id="confirm_units"></span> units of <span id="confirm_crypto"></span> from <span id="confirm_source"></span> to <span id="confirm_destination"></span>,Please Confirm.</p>
+                            </center>
+                            <center>
+                                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#confirm_api_keys" id="confirm_yes" style="width:20%">Yes</button><button type="button" style="margin-left:15px;width:20%" class="btn btn-default" data-dismiss="modal">No</button>
+                            </center>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="confirm_api_keys" role="dialog">
+            <div class="modal-dialog update_api_dialog">
+                <div class="modal-content">
+                    <div class="modal-header update_api_header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><b>Unseal Key Portion</b></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                        <center><p style="font-size:18px">Enter exact 6 digits key to add secret to vault</p>
+                        <input type="text" class="form-control" id="confirm_six_digit" style="width:92%" required><br>
+                        </center>
+                        <center>
+                            <button type="button" id="confirm_secret" class="btn btn-default" style="width:20%">Ok</button><button type="button" style="margin-left:15px" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </center>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+      </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function()
+    {
+
+         console.log($("#select_process").val());
+    /*     if($("#select_process").val() == '')
+         {
+            $("#submit").attr("disabled",true);
+         }
+         else
+         {
+            $("#submit").attr("disabled",false);
+         }
+
+     */
+
+         $("#select_process").change(function()
+         {
+           var selected_val = $("#select_process option:selected").val();
+           console.log(selected_val);
+
+           var new_val = selected_val.split('-');
+           console.log(new_val);
+
+           $("#source").val(new_val[1]);
+           $("#destination").val(new_val[2]);
+           $("#crypto").val(new_val[3]);
+           $("#units").val(new_val[4]);
+
+
+         });
+
+         $("#close").on('click',function()
+         {
+            alert("Close");
+         });
+
+         $("#refresh").on('click',function()
+         {
+            window.location.href="http://127.0.0.1:5000";
+         });
+
+        $("#add_input").click(function()
+        {
+    		var lastField = $("#buildyourform div:last");
+            var intId = (lastField && lastField.length && lastField.data("idx") + 1) || 1;
+            var fieldWrapper = $("<div class=\"fieldwrapper\" id=\"field" + intId + "\"/>");
+            fieldWrapper.data("idx", intId);
+
+            var fName = $("<input type=\"text\" class=\"form-control new_key_cls\" placeholder=\"Enter Key\" name=\"new_key[]\" style=\"width:25%\" required/>");
+            var fType = $("<input type=\"text\" class=\"form-control new_val_cls\" placeholder=\"Enter value\" name=\"new_val[]\" style=\"width:62%;margin-left:169px;margin-top:-34px\" required/>");
+            var removeButton = $("<button type=\"button\" class=\"btn btn-default\" style=\"margin-left:90%;margin-top:-9%\"><span class=\"glyphicon glyphicon-minus remove\"></span></button>");
+
+            removeButton.click(function()
+            {
+                $(this).parent().remove();
+            });
+
+            fieldWrapper.append(fName);
+            fieldWrapper.append(fType);
+            fieldWrapper.append(removeButton);
+            $("#buildyourform").append(fieldWrapper);
+        });
+
+        $("#add_input_fields").click(function()
+        {
+            var lastField = $("#updateform div:last");
+            var intId = (lastField && lastField.length && lastField.data("idx") + 1) || 1;
+            var fieldWrapper = $("<div class=\"fieldwrapper\" id=\"field" + intId + "\"/>");
+            fieldWrapper.data("idx", intId);
+
+            var fName = $("<input type=\"text\" class=\"form-control new_key_cls\" placeholder=\"Enter Key\" name=\"new_key[]\" style=\"width:25%\" required/>");
+            var fType = $("<input type=\"text\" class=\"form-control new_val_cls\" placeholder=\"Enter value\" name=\"new_val[]\" style=\"width:62%;margin-left:169px;margin-top:-34px\" required/>");
+            var removeButton = $("<button type=\"button\" class=\"btn btn-default\" style=\"margin-left:90%;margin-top:-9%\"><span class=\"glyphicon glyphicon-minus remove\"></span></button>");
+
+            removeButton.click(function()
+            {
+                $(this).parent().remove();
+            });
+
+            fieldWrapper.append(fName);
+            fieldWrapper.append(fType);
+            fieldWrapper.append(removeButton);
+            $("#updateform").append(fieldWrapper);
+        });
+
+        $("#add_sub").click(function()
+        {
+
+            var form_datas = {};
+
+            form_datas['Exchange'] = $("#exchange").val();
+            form_datas['API key'] = $("#api_key").val();
+            form_datas['Secret Key'] = $("#secret_key").val();
+
+            var new_key_value = [];
+            var new_val_value = [];
+
+            $.each($('.new_key_cls'), function()
+            {
+                new_key_value.push($(this).val());
+            });
+
+            $.each($('.new_val_cls'), function()
+            {
+                new_val_value.push($(this).val());
+            });
+
+            for(var i=0;i<new_key_value.length;i++)
+            {
+                for(var j=0;j<new_val_value.length;j++)
+                {
+                    if(i == j)
+                    {
+
+                        form_datas[new_key_value[i]] = new_val_value[j];
+                    }
+                }
+            }
+
+            console.log(form_datas);
+
+            $.ajax({
+                type:'POST',
+                url:'/add_secret',
+                dataType:'json',
+                contentType:'application/json',
+                data:JSON.stringify(form_datas),
+                success:function(data)
+                {
+                    console.log(data);
+                    alert(data['result']);
+                    location.reload();
+
+                }
+            });
+            //location.reload();
+        });
+
+        $("#update_btn").click(function()
+        {
+
+            var form_datas = {};
+
+            form_datas['Exchange'] = $("#update_exchange").val();
+            form_datas['API key'] = $("#update_api_key").val();
+            form_datas['Secret Key'] = $("#update_secret_key").val();
+
+            var new_key_value = [];
+            var new_val_value = [];
+
+            $.each($('.new_key_cls'), function()
+            {
+                new_key_value.push($(this).val());
+            });
+
+            $.each($('.new_val_cls'), function()
+            {
+                new_val_value.push($(this).val());
+            });
+
+            for(var i=0;i<new_key_value.length;i++)
+            {
+                for(var j=0;j<new_val_value.length;j++)
+                {
+                    if(i == j)
+                    {
+
+                        form_datas[new_key_value[i]] = new_val_value[j];
+                    }
+                }
+            }
+
+            console.log(form_datas);
+
+            $.ajax({
+                type:'POST',
+                url:'/update_secret',
+                dataType:'json',
+                contentType:'application/json',
+                data:JSON.stringify(form_datas),
+                success:function(data)
+                {
+                    console.log(data);
+                    alert(data['result']);
+                    location.reload();
+
+                }
+            });
+            //location.reload();
+        });
+
+        $("#confirm_secret").click(function()
+        {
+
+            if($("#confirm_six_digit").val() == '')
+            {
+
+                alert("Input field cannot be empty!");
+            }
+
+            else
+            {
+                $("#confirm_api_keys .close").click();
+
+                var transfer_data = {};
+                transfer_data['crypto'] = $("#crypto").val();
+                transfer_data['units'] = $("#units").val();
+                transfer_data['source'] = $("#source").val();
+                transfer_data['destination'] = $("#destination").val();
+                transfer_data['unseal_key'] = $("#confirm_six_digit").val();
+
+                $.ajax({
+                    type:'POST',
+                    url:'/transfer_data',
+                    dataType:'json',
+                    contentType:'application/json',
+                    data:JSON.stringify(transfer_data),
+                    success:function(data)
+                    {
+                        console.log(data);
+                        alert(data['result']);
+                        location.reload();
+
+                    }
+                });
+            }
+        });
+
+        $("#select_exchange_list").change(function()
+        {
+            var selected_val = $("#select_exchange_list option:selected").val();
+            console.log(selected_val);
+
+            $("#update_exchange").val(selected_val);
+        });
+
+        $("#submit").click(function()
+        {
+
+            if($("#select_process").val() == '')
+            {
+                alert("Input fields cannot be empty!!");
+
+                $('#submit').attr('data-target','');
+            }
+            else
+            {
+
+                $('#submit').attr('data-target','#confirm_transfer');
+
+                var crypto = $("#crypto").val();
+                var units = $("#units").val();
+                var source = $("#source").val();
+                var destination = $("#destination").val();
+
+                $("#confirm_crypto").text(crypto);
+                $("#confirm_units").text(units);
+                $("#confirm_source").text(source);
+                $("#confirm_destination").text(destination);
+            }
+        });
+
+        $("#confirm_yes").click(function()
+        {
+            $("#confirm_transfer .close").click();
+        });
+
+        $("#add_btn").click(function()
+        {
+            if($("#exchange").val() != "" && $("#api_key").val() != "" && $("#"))
+        });
+        data-target="#add_api_modal"
+    });
+</script>
+</html>
